@@ -147,6 +147,17 @@ void MainWindow::on_checkBox_2_toggled(bool checked)
 
 void MainWindow::on_actionSave_triggered()
 {
-    qDebug() << "Frequency: " << wavFile.wav_spec.freq << "\n";
-    qDebug() << "Total number of seconds: " << wavFile.wav_len/(2 * wavFile.wav_spec.freq) << "\n";
+    QString saveFileName = QFileDialog::getSaveFileName();
+    QFile file(saveFileName);
+    file.open(QIODevice::WriteOnly);
+
+    double ticksPerSec = wavFile.wav_spec.freq;
+    double timeOfPulseInSeconds = 0;
+    QString writeLine = "";
+
+    for(int i = 0; i < pulses->count(); ++i){
+        timeOfPulseInSeconds = pulses->at(i).x()/ticksPerSec;
+        writeLine = QString::number(timeOfPulseInSeconds) + "\n";
+        file.write(writeLine.toStdString().c_str());
+    }
 }
