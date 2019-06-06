@@ -14,6 +14,7 @@
 #include <QChart>
 #include <QChartView>
 #include <QLineSeries>
+#include <QScatterSeries>
 
 #include <QMessageBox>
 
@@ -42,6 +43,16 @@ private slots:
 
     void on_checkBox_toggled(bool checked);
 
+    void on_actionExit_triggered();
+
+    void on_platoSlider_sliderMoved(int position);
+
+    void on_checkBox_2_toggled(bool checked);
+
+    void on_platoSlider_sliderReleased();
+
+    void on_actionSave_triggered();
+
 private:
     Ui::MainWindow *ui;
 
@@ -60,6 +71,7 @@ private:
     QLineSeries *chartSeries2;
 
     QLineSeries *integralSeries;
+    QScatterSeries *pulses;
 };
 
 #endif // MAINWINDOW_H

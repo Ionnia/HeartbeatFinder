@@ -4,6 +4,7 @@
 #include <QChartView>
 #include <QChart>
 #include <QLineSeries>
+#include <QScatterSeries>
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -55,6 +56,37 @@ void setChart(QChartView *chartView, QChart *chart, QLineSeries *series){
     chart->createDefaultAxes();
 
     chartView->setChart(chart);
+}
+
+void calculatePulsePoints(QScatterSeries *scatter, QLineSeries *integralSeries, int widthOfPlato){
+    scatter->clear();
+    int intSeriesSize = integralSeries->count();
+    int sameValueCount = 0;
+    bool insidePulseInterval = false;
+    int intervalStart = 0;
+    int intervalEnd = 0;
+    for(int i = 1; i < intSeriesSize; ++i){
+        // Если текущее значение равно предыдущему
+        if(integralSeries->at(i).y() == integralSeries->at(i-1).y()){
+            ++sameValueCount;
+        } else {    // В противном случае
+            if(!insidePulseInterval){   // Если мы были вне интервала удара сердца, то мы только что зашли в него
+                insidePulseInterval = true;
+                intervalStart = integralSeries->at(i).x();
+                sameValueCount = 0;
+            }
+        }
+        // Если значения повторяются больше определённого кол-ва раз, то мы находимся между ударами сердца
+        if(sameValueCount > widthOfPlato && insidePulseInterval){
+             intervalEnd = integralSeries->at(i - widthOfPlato).x();
+             insidePulseInterval = false;
+             scatter->append((intervalEnd + intervalStart)/2, 0);
+        }
+    }
+    if(insidePulseInterval){
+        intervalEnd = integralSeries->at(intSeriesSize-1).x();
+        scatter->append((intervalEnd + intervalStart)/2, 0);
+    }
 }
 
 #endif // LOGIC_H

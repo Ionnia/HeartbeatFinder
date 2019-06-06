@@ -15,8 +15,18 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout" rowstretch="0" columnstretch="0,0">
+    <item row="0" column="1">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QChartView" name="graphicsView"/>
+      </item>
+      <item>
+       <widget class="QChartView" name="graphicsView_2"/>
+      </item>
+     </layout>
+    </item>
     <item row="0" column="0">
-     <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0">
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0,0">
       <property name="sizeConstraint">
        <enum>QLayout::SetFixedSize</enum>
       </property>
@@ -61,7 +71,7 @@
          </size>
         </property>
         <property name="text">
-         <string>Шир. плато  0</string>
+         <string>Ширина плато: 1</string>
         </property>
        </widget>
       </item>
@@ -72,6 +82,12 @@
           <width>200</width>
           <height>16777215</height>
          </size>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>1000</number>
         </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -94,15 +110,34 @@
         </property>
        </widget>
       </item>
-     </layout>
-    </item>
-    <item row="0" column="1">
-     <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QChartView" name="graphicsView"/>
+       <widget class="QCheckBox" name="checkBox_2">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>200</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Показывать точки пульса</string>
+        </property>
+       </widget>
       </item>
       <item>
-       <widget class="QChartView" name="graphicsView_2"/>
+       <widget class="QLabel" name="label_3">
+        <property name="maximumSize">
+         <size>
+          <width>200</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Количество биений сердца: 0</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>

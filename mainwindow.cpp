@@ -17,6 +17,10 @@ MainWindow::MainWindow(QWidget *parent) :
     chart2 = new QChart();
 
     integralSeries = new QLineSeries();
+    pulses = new QScatterSeries();
+    pulses->setMarkerShape(QScatterSeries::MarkerShapeCircle);
+    pulses->setMarkerSize(10.0);
+    pulses->setColor(QColor(255, 0, 0));
 }
 
 MainWindow::~MainWindow()
@@ -28,6 +32,7 @@ MainWindow::~MainWindow()
     delete chartSeries1;
     delete chartSeries2;
     delete integralSeries;
+    delete pulses;
 
     delete ui;
 }
@@ -41,12 +46,14 @@ void MainWindow::on_actionOpen_triggered()
             // Считываем данные
             bufToQLineSeries(chartSeries1, wavFile.wav_buf_16bit, wavFile.wav_len/2, 10);
             absBufToQLineSeriesWithPorog(chartSeries2, integralSeries, wavFile.wav_buf_16bit, wavFile.wav_len/2, 10, 0);
+            calculatePulsePoints(pulses, integralSeries, ui->platoSlider->sliderPosition());
 
             setChart(ui->graphicsView, chart1, chartSeries1);
             setChart(ui->graphicsView_2, chart2, chartSeries2);
 
             ui->porogSlider->setSliderPosition(0);
             ui->checkBox->setEnabled(true);
+            ui->checkBox_2->setEnabled(true);
         } else {
             fileName = "";
         }
@@ -78,6 +85,15 @@ void MainWindow::on_porogSlider_sliderReleased()
         } else {
             chart2->addSeries(chartSeries2);
         }
+        if(ui->checkBox_2->isChecked()){
+            chart2->removeSeries(pulses);
+        }
+        calculatePulsePoints(pulses, integralSeries, ui->platoSlider->sliderPosition());
+        if(ui->checkBox_2->isChecked()){
+            chart2->addSeries(pulses);
+            ui->label_3->setText("Количество биений сердца: " + QString::number(pulses->count()));
+        }
+        chart2->createDefaultAxes();
     }
 }
 
@@ -90,4 +106,47 @@ void MainWindow::on_checkBox_toggled(bool checked)
         chart2->removeSeries(integralSeries);
         chart2->addSeries(chartSeries2);
     }
+    chart2->createDefaultAxes();
+}
+
+void MainWindow::on_actionExit_triggered()
+{
+    QApplication::quit();
+}
+
+void MainWindow::on_platoSlider_sliderMoved(int position)
+{
+    ui->label_2->setText("Ширина плато: " + QString::number(position));
+}
+
+
+void MainWindow::on_platoSlider_sliderReleased()
+{
+    if(!fileName.isEmpty()){
+        calculatePulsePoints(pulses, integralSeries, ui->platoSlider->sliderPosition());
+        if(ui->checkBox_2->isChecked()){
+            chart2->removeSeries(pulses);
+            chart2->addSeries(pulses);
+            ui->label_3->setText("Количество биений сердца: " + QString::number(pulses->count()));
+        }
+        chart2->createDefaultAxes();
+    }
+}
+
+void MainWindow::on_checkBox_2_toggled(bool checked)
+{
+    if(checked){
+        chart2->addSeries(pulses);
+        ui->label_3->setText("Количество биений сердца: " + QString::number(pulses->count()));
+    } else {
+        chart2->removeSeries(pulses);
+        ui->label_3->setText("Количество биений сердца: 0");
+    }
+    chart2->createDefaultAxes();
+}
+
+void MainWindow::on_actionSave_triggered()
+{
+    qDebug() << "Frequency: " << wavFile.wav_spec.freq << "\n";
+    qDebug() << "Total number of seconds: " << wavFile.wav_len/(2 * wavFile.wav_spec.freq) << "\n";
 }
