@@ -15,6 +15,8 @@
 #include <QChartView>
 #include <QLineSeries>
 
+#include <QMessageBox>
+
 #include "wav_file.h"
 
 QT_CHARTS_USE_NAMESPACE

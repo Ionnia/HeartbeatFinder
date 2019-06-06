@@ -36,23 +36,25 @@ void MainWindow::on_actionOpen_triggered()
 {
     fileName = QFileDialog::getOpenFileName();
     if(!fileName.isEmpty()){
-        qDebug() << fileName << "\n";
         QFile file(fileName);
         if(wavFile.openWAV(fileName)){
-            qDebug() << "File is OPEN!\n";
+            // Считываем данные
+            bufToQLineSeries(chartSeries1, wavFile.wav_buf_16bit, wavFile.wav_len/2, 10);
+            absBufToQLineSeriesWithPorog(chartSeries2, integralSeries, wavFile.wav_buf_16bit, wavFile.wav_len/2, 10, 0);
+
+            setChart(ui->graphicsView, chart1, chartSeries1);
+            setChart(ui->graphicsView_2, chart2, chartSeries2);
+
+            ui->porogSlider->setSliderPosition(0);
+            ui->checkBox->setEnabled(true);
         } else {
-            qDebug() << "Can't open file!\n";
+            fileName = "";
         }
-
-        // Считываем данные
-        bufToQLineSeries(chartSeries1, wavFile.wav_buf_16bit, wavFile.wav_len/2, 10);
-        absBufToQLineSeriesWithPorog(chartSeries2, integralSeries, wavFile.wav_buf_16bit, wavFile.wav_len/2, 10, 0);
-
-        setChart(ui->graphicsView, chart1, chartSeries1);
-        setChart(ui->graphicsView_2, chart2, chartSeries2);
-
-        ui->porogSlider->setSliderPosition(0);
-        ui->checkBox->setEnabled(true);
+    }
+    if(fileName.isEmpty()){
+        QString messageBoxText = "По какой-то причине не удалось открыть файл.\n";
+        messageBoxText += "Программа принимает только звуковые файлы формата .wav";
+        QMessageBox::warning(this, "Не удалось открыть файл", messageBoxText);
     }
 
 }
