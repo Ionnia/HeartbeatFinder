@@ -8,31 +8,32 @@
 
 QT_CHARTS_USE_NAMESPACE
 
-void bufToQLineSeries(QLineSeries *series, int16_t *buf, uint32_t bufSize, uint32_t spacing){
+void bufToQLineSeries(QLineSeries *series, int16_t *buf, uint32_t bufSize, uint32_t spacing, uint32_t ticksPerSecond = 44100){
     series->clear();
     for(uint32_t i = 0; i < bufSize; i += spacing){
-        series->append(i, buf[i]);
+        series->append((double)i/ticksPerSecond, buf[i]);
     }
 }
 
-void absBufToQLineSeries(QLineSeries *series, int16_t *buf, uint32_t bufSize, uint32_t spacing){
+void absBufToQLineSeries(QLineSeries *series, int16_t *buf, uint32_t bufSize, uint32_t spacing, uint32_t ticksPerSecond = 44100){
     series->clear();
     for(uint32_t i = 0; i < bufSize; i += spacing){
-        series->append(i, abs(buf[i]));
+        series->append((double)i/ticksPerSecond, abs(buf[i]));
     }
 }
 
-void absBufToQLineSeriesWithPorog(QLineSeries *series, QLineSeries *integralSeries, int16_t *buf, uint32_t bufSize, uint32_t spacing, uint32_t porog){
+void absBufToQLineSeriesWithPorog(QLineSeries *series, QLineSeries *integralSeries, int16_t *buf, uint32_t bufSize, uint32_t spacing, uint32_t porog,
+                                  uint32_t ticksPerSecond = 44100){
     series->clear();
     integralSeries->clear();
     uint32_t integrator = 0;
     for(uint32_t i = 0; i < bufSize; i += spacing){
-        integralSeries->append(i, integrator);
+        integralSeries->append((double)i/ticksPerSecond, integrator);
         if((uint32_t)abs(buf[i]) < porog){
-            series->append(i, 0);
+            series->append((double)i/ticksPerSecond, 0);
             integrator += 0;
         } else {
-            series->append(i, abs(buf[i]));
+            series->append((double)i/ticksPerSecond, abs(buf[i]));
             integrator += abs(buf[i]);
         }
     }
@@ -58,13 +59,14 @@ void setChart(QChartView *chartView, QChart *chart, QLineSeries *series){
     chartView->setChart(chart);
 }
 
-void calculatePulsePoints(QScatterSeries *scatter, QLineSeries *integralSeries, int widthOfPlato){
+void calculatePulsePoints(QScatterSeries *scatter, QLineSeries *integralSeries, int widthOfPlato, uint32_t ticksPerSecond = 44100){
     scatter->clear();
     int intSeriesSize = integralSeries->count();
     int sameValueCount = 0;
     bool insidePulseInterval = false;
-    int intervalStart = 0;
-    int intervalEnd = 0;
+    double intervalStart = 0;
+    double intervalEnd = 0;
+    double pulseTime = 0;
     for(int i = 1; i < intSeriesSize; ++i){
         // Если текущее значение равно предыдущему
         if(integralSeries->at(i).y() == integralSeries->at(i-1).y()){
@@ -80,12 +82,14 @@ void calculatePulsePoints(QScatterSeries *scatter, QLineSeries *integralSeries, 
         if(sameValueCount > widthOfPlato && insidePulseInterval){
              intervalEnd = integralSeries->at(i - widthOfPlato).x();
              insidePulseInterval = false;
-             scatter->append((intervalEnd + intervalStart)/2, 0);
+             pulseTime = (intervalEnd + intervalStart)/2;
+             scatter->append(pulseTime, 0);
         }
     }
     if(insidePulseInterval){
         intervalEnd = integralSeries->at(intSeriesSize-1).x();
-        scatter->append((intervalEnd + intervalStart)/2, 0);
+        pulseTime = (intervalEnd + intervalStart)/2;
+        scatter->append(pulseTime, 0);
     }
 }
 

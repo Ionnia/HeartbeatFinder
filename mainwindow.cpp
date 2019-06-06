@@ -156,7 +156,7 @@ void MainWindow::on_actionSave_triggered()
     QString writeLine = "";
 
     for(int i = 0; i < pulses->count(); ++i){
-        timeOfPulseInSeconds = pulses->at(i).x()/ticksPerSec;
+        timeOfPulseInSeconds = pulses->at(i).x();
         writeLine = QString::number(timeOfPulseInSeconds) + "\n";
         file.write(writeLine.toStdString().c_str());
     }
