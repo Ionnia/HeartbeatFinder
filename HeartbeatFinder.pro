@@ -29,8 +29,8 @@ SOURCES += \
 
 HEADERS += \
         mainwindow.h \
-    wav_file.h \
-    logic.h
+    logic.h \
+    wavfile.h
 
 FORMS += \
         mainwindow.ui

@@ -42,7 +42,18 @@ void MainWindow::on_actionOpen_triggered()
     fileName = QFileDialog::getOpenFileName();
     if(!fileName.isEmpty()){
         QFile file(fileName);
+        if(!wavFile.isEmpty){
+            wavFile.free();
+        }
         if(wavFile.openWAV(fileName)){
+            chart1->removeSeries(chartSeries1);
+            chart2->removeSeries(chartSeries2);
+            chart2->removeSeries(integralSeries);
+            chart2->removeSeries(pulses);
+            chartSeries1->clear();
+            chartSeries2->clear();
+            integralSeries->clear();
+            pulses->clear();
             // Считываем данные
             bufToQLineSeries(chartSeries1, wavFile.wav_buf_16bit, wavFile.wav_len/2, 10);
             absBufToQLineSeriesWithPorog(chartSeries2, integralSeries, wavFile.wav_buf_16bit, wavFile.wav_len/2, 10, 0);
@@ -151,13 +162,28 @@ void MainWindow::on_actionSave_triggered()
     QFile file(saveFileName);
     file.open(QIODevice::WriteOnly);
 
-    double ticksPerSec = wavFile.wav_spec.freq;
     double timeOfPulseInSeconds = 0;
     QString writeLine = "";
 
     for(int i = 0; i < pulses->count(); ++i){
         timeOfPulseInSeconds = pulses->at(i).x();
         writeLine = QString::number(timeOfPulseInSeconds) + "\n";
+        file.write(writeLine.toStdString().c_str());
+    }
+}
+
+void MainWindow::on_action_triggered()
+{
+    QString saveFileName = QFileDialog::getSaveFileName();
+    QFile file(saveFileName);
+    file.open(QIODevice::WriteOnly);
+
+    double intervalBetweenPulses = 0;
+    QString writeLine = "";
+
+    for(int i = 1; i < pulses->count(); ++i){
+        intervalBetweenPulses = pulses->at(i).x() - pulses->at(i-1).x();
+        writeLine = QString::number(intervalBetweenPulses) + "\n";
         file.write(writeLine.toStdString().c_str());
     }
 }

@@ -18,7 +18,7 @@
 
 #include <QMessageBox>
 
-#include "wav_file.h"
+#include "wavfile.h"
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -52,6 +52,8 @@ private slots:
     void on_platoSlider_sliderReleased();
 
     void on_actionSave_triggered();
+
+    void on_action_triggered();
 
 private:
     Ui::MainWindow *ui;

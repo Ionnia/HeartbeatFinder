@@ -9,11 +9,12 @@ struct WavFile {
     uint32_t wav_len;
     uint8_t *wav_buf;
     int16_t *wav_buf_16bit;
+    bool isEmpty = true;
 
     WavFile(){}
 
     ~WavFile(){
-        delete[] wav_buf;
+        SDL_FreeWAV(wav_buf);
     }
 
     bool openWAV(QString fileName){
@@ -22,8 +23,14 @@ struct WavFile {
             return false;
         } else {
             wav_buf_16bit = (int16_t*)wav_buf;
+            isEmpty = false;
             return true;
         }
+    }
+
+    void free(){
+        SDL_FreeWAV(wav_buf);
+        isEmpty = true;
     }
 };
 
