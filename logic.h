@@ -10,15 +10,25 @@ QT_CHARTS_USE_NAMESPACE
 
 void bufToQLineSeries(QLineSeries *series, int16_t *buf, uint32_t bufSize, uint32_t spacing, uint32_t ticksPerSecond = 44100){
     series->clear();
-    for(uint32_t i = 0; i < bufSize; i += spacing){
-        series->append((double)i/ticksPerSecond, buf[i]);
+    int64_t averageValue = 0;      // Среднее значение в диапазоне spacing
+    for(uint32_t i = 0; i < bufSize; ++i){
+        averageValue += buf[i];
+        if(i % spacing == 0){
+            series->append((double)i/ticksPerSecond, buf[i]);
+            averageValue = 0;
+        }
     }
 }
 
 void absBufToQLineSeries(QLineSeries *series, int16_t *buf, uint32_t bufSize, uint32_t spacing, uint32_t ticksPerSecond = 44100){
     series->clear();
-    for(uint32_t i = 0; i < bufSize; i += spacing){
-        series->append((double)i/ticksPerSecond, abs(buf[i]));
+    int64_t averageValue = 0;
+    for(uint32_t i = 0; i < bufSize; ++i){
+        averageValue += buf[i];
+        if(i % spacing == 0){
+            series->append((double)i/ticksPerSecond, abs(buf[i]));
+            averageValue = 0;
+        }
     }
 }
 
@@ -27,14 +37,19 @@ void absBufToQLineSeriesWithPorog(QLineSeries *series, QLineSeries *integralSeri
     series->clear();
     integralSeries->clear();
     uint32_t integrator = 0;
-    for(uint32_t i = 0; i < bufSize; i += spacing){
-        integralSeries->append((double)i/ticksPerSecond, integrator);
-        if((uint32_t)abs(buf[i]) < porog){
-            series->append((double)i/ticksPerSecond, 0);
-            integrator += 0;
-        } else {
-            series->append((double)i/ticksPerSecond, abs(buf[i]));
-            integrator += abs(buf[i]);
+    int64_t averageValue;
+    for(uint32_t i = 0; i < bufSize; ++i){
+        averageValue += buf[i];
+        if(i % spacing == 0){
+            integralSeries->append((double)i/ticksPerSecond, integrator);
+            if((uint32_t)abs(buf[i]) < porog){
+                series->append((double)i/ticksPerSecond, 0);
+                integrator += 0;
+            } else {
+                series->append((double)i/ticksPerSecond, abs(buf[i]));
+                integrator += abs(averageValue);
+            }
+            averageValue = 0;
         }
     }
 }
@@ -75,8 +90,8 @@ void calculatePulsePoints(QScatterSeries *scatter, QLineSeries *integralSeries, 
             if(!insidePulseInterval){   // Если мы были вне интервала удара сердца, то мы только что зашли в него
                 insidePulseInterval = true;
                 intervalStart = integralSeries->at(i).x();
-                sameValueCount = 0;
             }
+            sameValueCount = 0;
         }
         // Если значения повторяются больше определённого кол-ва раз, то мы находимся между ударами сердца
         if(sameValueCount > widthOfPlato && insidePulseInterval){
@@ -86,7 +101,7 @@ void calculatePulsePoints(QScatterSeries *scatter, QLineSeries *integralSeries, 
              scatter->append(pulseTime, 0);
         }
     }
-    if(insidePulseInterval){
+    if(insidePulseInterval && scatter->count() > 0){
         intervalEnd = integralSeries->at(intSeriesSize-1).x();
         pulseTime = (intervalEnd + intervalStart)/2;
         scatter->append(pulseTime, 0);

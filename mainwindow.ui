@@ -52,7 +52,7 @@
          </size>
         </property>
         <property name="maximum">
-         <number>30000</number>
+         <number>32768</number>
         </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -71,7 +71,7 @@
          </size>
         </property>
         <property name="text">
-         <string>Ширина плато: 1</string>
+         <string>Ширина плато: 0.01 сек.</string>
         </property>
        </widget>
       </item>
@@ -87,7 +87,7 @@
          <number>1</number>
         </property>
         <property name="maximum">
-         <number>1000</number>
+         <number>100</number>
         </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>

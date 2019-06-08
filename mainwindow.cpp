@@ -55,8 +55,8 @@ void MainWindow::on_actionOpen_triggered()
             integralSeries->clear();
             pulses->clear();
             // Считываем данные
-            bufToQLineSeries(chartSeries1, wavFile.wav_buf_16bit, wavFile.wav_len/2, 10);
-            absBufToQLineSeriesWithPorog(chartSeries2, integralSeries, wavFile.wav_buf_16bit, wavFile.wav_len/2, 10, 0);
+            bufToQLineSeries(chartSeries1, wavFile.wav_buf_16bit, wavFile.wav_len/2, 441);
+            absBufToQLineSeriesWithPorog(chartSeries2, integralSeries, wavFile.wav_buf_16bit, wavFile.wav_len/2, 441, 0);
             calculatePulsePoints(pulses, integralSeries, ui->platoSlider->sliderPosition());
 
             setChart(ui->graphicsView, chart1, chartSeries1);
@@ -90,7 +90,7 @@ void MainWindow::on_porogSlider_sliderReleased()
         } else {
             chart2->removeSeries(chartSeries2);
         }
-        absBufToQLineSeriesWithPorog(chartSeries2, integralSeries, wavFile.wav_buf_16bit, wavFile.wav_len/2, 10, ui->porogSlider->sliderPosition());
+        absBufToQLineSeriesWithPorog(chartSeries2, integralSeries, wavFile.wav_buf_16bit, wavFile.wav_len/2, 441, ui->porogSlider->sliderPosition());
         if(ui->checkBox->isChecked()){
             chart2->addSeries(integralSeries);
         } else {
@@ -127,7 +127,7 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::on_platoSlider_sliderMoved(int position)
 {
-    ui->label_2->setText("Ширина плато: " + QString::number(position));
+    ui->label_2->setText("Ширина плато: " + QString::number(position * 0.01) + " сек.");
 }
 
 
