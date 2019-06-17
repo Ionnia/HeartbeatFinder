@@ -72,8 +72,15 @@ private:
     QChart *chart2;
     QLineSeries *chartSeries2;
 
+    // Интегральный график
     QLineSeries *integralSeries;
+    // График с точками пульса
     QScatterSeries *pulses;
+
+    // График спектра
+    QChartView *spectrumChartView;
+    QChart *spectrumChart;
+    QLineSeries *spectrumSeries;
 };
 
 #endif // MAINWINDOW_H

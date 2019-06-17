@@ -14,18 +14,74 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout" rowstretch="0" columnstretch="0,0">
-    <item row="0" column="1">
+   <layout class="QGridLayout" name="gridLayout" rowstretch="0,0" columnstretch="0,0">
+    <item row="1" column="1">
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QChartView" name="graphicsView"/>
-      </item>
-      <item>
-       <widget class="QChartView" name="graphicsView_2"/>
+       <widget class="QTabWidget" name="tabWidget">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="tab">
+         <attribute name="title">
+          <string>Дорожки</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <widget class="QChartView" name="graphicsView">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="interactive">
+             <bool>true</bool>
+            </property>
+            <property name="dragMode">
+             <enum>QGraphicsView::NoDrag</enum>
+            </property>
+            <property name="resizeAnchor">
+             <enum>QGraphicsView::NoAnchor</enum>
+            </property>
+            <property name="viewportUpdateMode">
+             <enum>QGraphicsView::MinimalViewportUpdate</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QChartView" name="graphicsView_2">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_2">
+         <attribute name="title">
+          <string>Спектр</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QChartView" name="graphicsView_3"/>
+          </item>
+         </layout>
+        </widget>
+       </widget>
       </item>
      </layout>
     </item>
-    <item row="0" column="0">
+    <item row="1" column="0">
      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0,0">
       <property name="sizeConstraint">
        <enum>QLayout::SetFixedSize</enum>

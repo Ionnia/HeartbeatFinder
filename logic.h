@@ -24,9 +24,9 @@ void absBufToQLineSeries(QLineSeries *series, int16_t *buf, uint32_t bufSize, ui
     series->clear();
     int64_t averageValue = 0;
     for(uint32_t i = 0; i < bufSize; ++i){
-        averageValue += buf[i];
+        averageValue += abs(buf[i]);
         if(i % spacing == 0){
-            series->append((double)i/ticksPerSecond, abs(buf[i]));
+            series->append((double)i/ticksPerSecond, averageValue);
             averageValue = 0;
         }
     }
@@ -36,35 +36,24 @@ void absBufToQLineSeriesWithPorog(QLineSeries *series, QLineSeries *integralSeri
                                   uint32_t ticksPerSecond = 44100){
     series->clear();
     integralSeries->clear();
+    uint32_t integrationWindow = 10;
     uint32_t integrator = 0;
-    int64_t averageValue;
+    int64_t averageValue = 0;
     for(uint32_t i = 0; i < bufSize; ++i){
-        averageValue += buf[i];
+        averageValue += abs(buf[i]);
         if(i % spacing == 0){
             integralSeries->append((double)i/ticksPerSecond, integrator);
             if((uint32_t)abs(buf[i]) < porog){
                 series->append((double)i/ticksPerSecond, 0);
                 integrator += 0;
             } else {
-                series->append((double)i/ticksPerSecond, abs(buf[i]));
+                series->append((double)i/ticksPerSecond, averageValue);
                 integrator += abs(averageValue);
             }
             averageValue = 0;
         }
     }
 }
-
-//void calcIntegralSeries(QLineSeries *series, QLineSeries integralSeries){
-//    // Количество точек в серии
-//    int seriesSize = series->count();
-//    QLineSeries tmp;
-//    uint32_t integrator = 0;
-//    for(int i = 0; i < seriesSize; ++i){
-//        tmp.append(series->at(i).x, integrator);
-//        integrator += series->at(i).y;
-//    }
-//}
-
 
 void setChart(QChartView *chartView, QChart *chart, QLineSeries *series){
     chart->legend()->hide();

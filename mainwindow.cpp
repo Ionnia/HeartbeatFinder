@@ -4,6 +4,9 @@
 #include <SDL2/SDL_audio.h>
 #include "logic.h"
 
+#include <thread>
+#include <functional>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -37,6 +40,10 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void test(){
+    qDebug() << "In Thread!" << "\n";
+}
+
 void MainWindow::on_actionOpen_triggered()
 {
     fileName = QFileDialog::getOpenFileName();
@@ -50,13 +57,19 @@ void MainWindow::on_actionOpen_triggered()
             chart2->removeSeries(chartSeries2);
             chart2->removeSeries(integralSeries);
             chart2->removeSeries(pulses);
+//            spectrumChart->removeSeries(spectrumSeries);
             chartSeries1->clear();
             chartSeries2->clear();
             integralSeries->clear();
             pulses->clear();
+//            spectrumSeries->clear();
             // Считываем данные
-            bufToQLineSeries(chartSeries1, wavFile.wav_buf_16bit, wavFile.wav_len/2, 441);
-            absBufToQLineSeriesWithPorog(chartSeries2, integralSeries, wavFile.wav_buf_16bit, wavFile.wav_len/2, 441, 0);
+//            bufToQLineSeries(chartSeries1, wavFile.wav_buf_16bit, wavFile.wav_len/2, 441);
+//            absBufToQLineSeriesWithPorog(chartSeries2, integralSeries, wavFile.wav_buf_16bit, wavFile.wav_len/2, 441, 0);
+            std::thread t1(bufToQLineSeries, chartSeries1, wavFile.wav_buf_16bit, wavFile.wav_len/2, 441, wavFile.wav_spec.freq);
+            std::thread t2(absBufToQLineSeriesWithPorog, chartSeries2, integralSeries, wavFile.wav_buf_16bit, wavFile.wav_len/2, 441, 0, wavFile.wav_spec.freq);
+            t1.join();
+            t2.join();
             calculatePulsePoints(pulses, integralSeries, ui->platoSlider->sliderPosition());
 
             setChart(ui->graphicsView, chart1, chartSeries1);

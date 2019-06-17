@@ -30,9 +30,12 @@ SOURCES += \
 HEADERS += \
         mainwindow.h \
     logic.h \
-    wavfile.h
+    wavfile.h \
+    signalprocessing.h
 
 FORMS += \
         mainwindow.ui
 
-LIBS += -lSDL2
+LIBS += -lSDL2 -pthread
+
+QMAKE_CXXFLAGS += -std=c++11
