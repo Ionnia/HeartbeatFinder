@@ -25,13 +25,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+        ECGLogic/edfdecoder.cpp \
+        ECGLogic/edfprocessing.cpp
 
 HEADERS += \
         mainwindow.h \
-    logic.h \
-    wavfile.h \
-    signalprocessing.h
+        logic.h \
+        wavfile.h \
+        ECGLogic/edfdecoder.h \
+        ECGLogic/edfprocessing.h
 
 FORMS += \
         mainwindow.ui
