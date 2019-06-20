@@ -89,6 +89,8 @@ void MainWindow::on_actionOpen_triggered()
             ui->porogSlider->setSliderPosition(0);
             ui->checkBox->setEnabled(true);
             ui->checkBox_2->setEnabled(true);
+
+            ui->tabWidget->setCurrentIndex(1);
         } else {
             fileName = "";
         }
@@ -245,6 +247,7 @@ void MainWindow::on_action_2_triggered()
             vecToQLineSeries(ecg3LineSeries, edf.data.data[2], 1);
             setChart(ui->ecgChan3GraphView, ecg3chart, ecg3LineSeries);
         }
+        ui->tabWidget->setCurrentIndex(0);
     }
 }
 
