@@ -158,10 +158,10 @@ void loadEDFHeader(std::ifstream &file, EDFHeader &header){
 void loadEDFData(std::ifstream &file, EDFData &data, const EDFHeader &header){
     int32_t  value;
     for(int i = 0; i < header.numberOfSignals; ++i){
-        std::vector<int32_t> signal;
+        std::vector<double> signal;
         for(int j = 0; j < header.numOfSamplesInDataRecord[i]; ++j){
             file.read((char *)&value, sizeof(value));
-            signal.push_back(value);
+            signal.push_back((double)value);
         }
         data.data.push_back(signal);
     }
@@ -177,7 +177,6 @@ int loadEDF(std::string pathToFile, EDF &edf){
     // Создаём EDF Header
     EDFHeader header;
     loadEDFHeader(file, header);
-    header.printInfo();
     // Создаём EDF Data
     EDFData data;
     loadEDFData(file, data, header);

@@ -97,4 +97,11 @@ void calculatePulsePoints(QScatterSeries *scatter, QLineSeries *integralSeries, 
     }
 }
 
+void vecToQLineSeries(QLineSeries *series, std::vector<double> values, uint32_t spacing){
+    series->clear();
+    for(uint32_t i = 0; i < values.size(); i += spacing){
+        series->append(i, values[i]);
+    }
+}
+
 #endif // LOGIC_H

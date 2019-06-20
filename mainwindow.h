@@ -19,6 +19,7 @@
 #include <QMessageBox>
 
 #include "wavfile.h"
+#include "ECGLogic/edfdecoder.h"
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -55,13 +56,35 @@ private slots:
 
     void on_action_triggered();
 
+    void on_action_2_triggered();
+
+    void on_horizontalSlider_sliderMoved(int position);
+
+    void on_pushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 
     QString fileName;
+    bool isECGFile;
 
+    // Данные для ЭКГ
+    EDF edf;
+    // График первого канала ЭКГ
+    QChart *ecg1chart;
+    QLineSeries *ecg1LineSeries;
+    // График второго канала ЭКГ
+    QChart *ecg2chart;
+    QLineSeries *ecg2LineSeries;
+    // График третьего канала ЭКГ
+    QChart *ecg3chart;
+    QLineSeries *ecg3LineSeries;
+    // Скатерограмма R пиков
+    QScatterSeries rPeaks;
+
+
+    // Данные для АУДИО
     WavFile wavFile;
-
     // Вывод исходного графика звука
     QChartView *chartView1;
     QChart *chart1;
