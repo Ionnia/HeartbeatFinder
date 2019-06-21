@@ -19,9 +19,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ecg1chart = new QChart();
     ecg2chart = new QChart();
     ecg3chart = new QChart();
-    ecg1LineSeries = new QLineSeries();
-    ecg2LineSeries = new QLineSeries();
-    ecg3LineSeries = new QLineSeries();
+    ecg1PartLineSeries = new QLineSeries();
+    ecg2PartLineSeries = new QLineSeries();
+    ecg3PartLineSeries = new QLineSeries();
     // Инициализация графиков для АУДИО
     chartSeries1 = new QLineSeries();
     chartSeries2 = new QLineSeries();
@@ -197,11 +197,18 @@ void MainWindow::on_actionSave_triggered()
 
     double timeOfPulseInSeconds = 0;
     QString writeLine = "";
-
-    for(int i = 0; i < pulses->count(); ++i){
-        timeOfPulseInSeconds = pulses->at(i).x();
-        writeLine = QString::number(timeOfPulseInSeconds) + "\n";
-        file.write(writeLine.toStdString().c_str());
+    if(isECGFile){
+        for(int i = 0; i < rPeaks.count(); ++i){
+            timeOfPulseInSeconds = rPeaks.at(i).x();
+            writeLine = QString::number(timeOfPulseInSeconds/1000) + "\n";
+            file.write(writeLine.toStdString().c_str());
+        }
+    } else {
+        for(int i = 0; i < pulses->count(); ++i){
+            timeOfPulseInSeconds = pulses->at(i).x();
+            writeLine = QString::number(timeOfPulseInSeconds) + "\n";
+            file.write(writeLine.toStdString().c_str());
+        }
     }
 }
 
@@ -215,10 +222,18 @@ void MainWindow::on_action_triggered()
     double intervalBetweenPulses = 0;
     QString writeLine = "";
 
-    for(int i = 1; i < pulses->count(); ++i){
-        intervalBetweenPulses = pulses->at(i).x() - pulses->at(i-1).x();
-        writeLine = QString::number(intervalBetweenPulses) + "\n";
-        file.write(writeLine.toStdString().c_str());
+    if(isECGFile){
+        for(int i = 1; i < rPeaks.count(); ++i){
+            intervalBetweenPulses = rPeaks.at(i).x() - rPeaks.at(i-1).x();
+            writeLine = QString::number(intervalBetweenPulses/1000) + "\n";
+            file.write(writeLine.toStdString().c_str());
+        }
+    } else {
+        for(int i = 1; i < pulses->count(); ++i){
+            intervalBetweenPulses = pulses->at(i).x() - pulses->at(i-1).x();
+            writeLine = QString::number(intervalBetweenPulses) + "\n";
+            file.write(writeLine.toStdString().c_str());
+        }
     }
 }
 
@@ -232,20 +247,27 @@ void MainWindow::on_action_2_triggered()
         messageBoxText += "Программа принимает только файлы формата .edf";
         QMessageBox::warning(this, "Не удалось открыть файл", messageBoxText);
     } else {
-        ecg1chart->removeSeries(ecg1LineSeries);
-        ecg2chart->removeSeries(ecg2LineSeries);
-        ecg3chart->removeSeries(ecg3LineSeries);
+        edf.header.printInfo();
+        ecg1chart->removeSeries(ecg1PartLineSeries);
+        ecg2chart->removeSeries(ecg2PartLineSeries);
+        ecg3chart->removeSeries(ecg3PartLineSeries);
         if(edf.header.numberOfSignals >= 1){
-            vecToQLineSeries(ecg1LineSeries, edf.data.data[0], 1);
-            setChart(ui->ecgChan1GraphView, ecg1chart, ecg1LineSeries);
+            part1Number = 0;
+            setPartialSeries(edf.data.data[0], ecg1PartLineSeries, edf.header.numOfSamplesInDataRecord[0]/2, part1Number);
+            setChart(ui->ecgChan1GraphView, ecg1chart, ecg1PartLineSeries);
+            ui->ecgChart1Label->setText("1/" + QString::number(edf.header.numberOfDataRecords));
         }
         if(edf.header.numberOfSignals >= 2){
-            vecToQLineSeries(ecg2LineSeries, edf.data.data[1], 1);
-            setChart(ui->ecgChan2GraphView, ecg2chart, ecg2LineSeries);
+            part2Number = 0;
+            setPartialSeries(edf.data.data[1], ecg2PartLineSeries, edf.header.numOfSamplesInDataRecord[1]/2, part2Number);
+            setChart(ui->ecgChan2GraphView, ecg2chart, ecg2PartLineSeries);
+            ui->ecgChart2Label->setText("1/" + QString::number(edf.header.numberOfDataRecords));
         }
         if(edf.header.numberOfSignals >= 3){
-            vecToQLineSeries(ecg3LineSeries, edf.data.data[2], 1);
-            setChart(ui->ecgChan3GraphView, ecg3chart, ecg3LineSeries);
+            part3Number = 0;
+            setPartialSeries(edf.data.data[2], ecg3PartLineSeries, edf.header.numOfSamplesInDataRecord[2]/2, part3Number);
+            setChart(ui->ecgChan3GraphView, ecg3chart, ecg3PartLineSeries);
+            ui->ecgChart3Label->setText("1/" + QString::number(edf.header.numberOfDataRecords));
         }
         ui->tabWidget->setCurrentIndex(0);
     }
@@ -277,15 +299,9 @@ void MainWindow::on_pushButton_clicked()
         }
         // Получение предобработанного сигнала
         std::vector<double> preprocessedSignal = preprocessSignal(edf.data.data[ecgChannel], ui->normLevelSpinBox->value());
-//        std::cout << "PrepSignal Len: " << preprocessedSignal.size() << std::endl;
-//        ecg1chart->removeSeries(ecg1LineSeries);
-//        vecToQLineSeries(ecg1LineSeries, preprocessedSignal, 1);
-//        ecg1chart->addSeries(ecg1LineSeries);
-//        ecg1chart->createDefaultAxes();
         // Нахождение QRS комплексов
         std::vector<QRS> qrsComplexes = findQRSComplexes(preprocessedSignal, ui->horizontalSlider->value());
-//        std::cout << "Length: " << qrsComplexes.size() << std::endl;
-        std::vector<RPeak> vecRPeaks = findRPeaks(edf.data.data[ecgChannel], qrsComplexes);
+        vecRPeaks = findRPeaks(edf.data.data[ecgChannel], qrsComplexes);
         rPeaks.clear();
         for(auto rPeak : vecRPeaks){
             rPeaks.append(rPeak.x, rPeak.y);
@@ -305,5 +321,107 @@ void MainWindow::on_pushButton_clicked()
             break;
         }
 //        ui->pushButton->setDisabled(true);
+    }
+}
+
+// Предыдущая страница первого ЭКГ графика
+void MainWindow::on_prev1PushButton_clicked()
+{
+    if(isECGFile && edf.header.numberOfSignals >= 0){
+        if(part1Number >= 1){
+            --part1Number;
+        } else {
+            part1Number = edf.header.numberOfDataRecords-1;
+        }
+        ecg1chart->removeSeries(ecg1PartLineSeries);
+        setPartialSeries(edf.data.data[0], ecg1PartLineSeries, edf.header.numOfSamplesInDataRecord[0]/2, part1Number);
+        ecg1chart->addSeries(ecg1PartLineSeries);
+        ecg1chart->createDefaultAxes();
+        ui->ecgChart1Label->setText(QString::number(part1Number + 1) + "/" + QString::number(edf.header.numberOfDataRecords));
+    }
+}
+// Следующая страница первого ЭКГ графика
+void MainWindow::on_next1PushButton_clicked()
+{
+    // FIXME: Случай, когда файл пустой
+    if(isECGFile && edf.header.numberOfSignals >= 0){
+        if(part1Number <= (uint32_t)edf.header.numberOfDataRecords-2){
+            ++part1Number;
+        } else {
+            part1Number = 0;
+        }
+        ecg1chart->removeSeries(ecg1PartLineSeries);
+        setPartialSeries(edf.data.data[0], ecg1PartLineSeries, edf.header.numOfSamplesInDataRecord[0]/2, part1Number);
+        ecg1chart->addSeries(ecg1PartLineSeries);
+        ecg1chart->createDefaultAxes();
+        ui->ecgChart1Label->setText(QString::number(part1Number + 1) + "/" + QString::number(edf.header.numberOfDataRecords));
+    }
+}
+
+// Предыдущая страница второго ЭКГ графика
+void MainWindow::on_prev2PushButton_clicked()
+{
+    if(isECGFile && edf.header.numberOfSignals >= 1){
+        if(part2Number >= 1){
+            --part2Number;
+        } else {
+            part2Number = edf.header.numberOfDataRecords-1;
+        }
+        ecg2chart->removeSeries(ecg2PartLineSeries);
+        setPartialSeries(edf.data.data[1], ecg2PartLineSeries, edf.header.numOfSamplesInDataRecord[1]/2, part2Number);
+        ecg2chart->addSeries(ecg2PartLineSeries);
+        ecg2chart->createDefaultAxes();
+        ui->ecgChart2Label->setText(QString::number(part2Number + 1) + "/" + QString::number(edf.header.numberOfDataRecords));
+    }
+}
+
+// Следующая страница третьего ЭКГ
+void MainWindow::on_next2PushButton_clicked()
+{
+    // FIXME: Случай, когда файл пустой
+    if(isECGFile && edf.header.numberOfSignals >= 1){
+        if(part2Number <= (uint32_t)edf.header.numberOfDataRecords-2){
+            ++part2Number;
+        } else {
+            part2Number = 0;
+        }
+        ecg2chart->removeSeries(ecg2PartLineSeries);
+        setPartialSeries(edf.data.data[1], ecg2PartLineSeries, edf.header.numOfSamplesInDataRecord[1]/2, part2Number);
+        ecg2chart->addSeries(ecg2PartLineSeries);
+        ecg2chart->createDefaultAxes();
+        ui->ecgChart2Label->setText(QString::number(part2Number + 1) + "/" + QString::number(edf.header.numberOfDataRecords));
+    }
+}
+
+void MainWindow::on_prev3PushButton_clicked()
+{
+    if(isECGFile && edf.header.numberOfSignals >= 2){
+        if(part3Number >= 1){
+            --part3Number;
+        } else {
+            part3Number = edf.header.numberOfDataRecords-1;
+        }
+        ecg3chart->removeSeries(ecg3PartLineSeries);
+        setPartialSeries(edf.data.data[2], ecg3PartLineSeries, edf.header.numOfSamplesInDataRecord[2]/2, part3Number);
+        ecg3chart->addSeries(ecg3PartLineSeries);
+        ecg3chart->createDefaultAxes();
+        ui->ecgChart3Label->setText(QString::number(part3Number + 1) + "/" + QString::number(edf.header.numberOfDataRecords));
+    }
+}
+
+void MainWindow::on_next3PushButton_clicked()
+{
+    // FIXME: Случай, когда файл пустой
+    if(isECGFile && edf.header.numberOfSignals >= 2){
+        if(part3Number <= (uint32_t)edf.header.numberOfDataRecords-2){
+        ++part3Number;
+        } else {
+            part3Number = 0;
+        }
+        ecg3chart->removeSeries(ecg3PartLineSeries);
+        setPartialSeries(edf.data.data[2], ecg3PartLineSeries, edf.header.numOfSamplesInDataRecord[2]/2, part3Number);
+        ecg3chart->addSeries(ecg3PartLineSeries);
+        ecg3chart->createDefaultAxes();
+        ui->ecgChart3Label->setText(QString::number(part3Number + 1) + "/" + QString::number(edf.header.numberOfDataRecords));
     }
 }

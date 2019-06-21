@@ -20,6 +20,7 @@
 
 #include "wavfile.h"
 #include "ECGLogic/edfdecoder.h"
+#include "ECGLogic/edfprocessing.h"
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -62,25 +63,45 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_prev1PushButton_clicked();
+
+    void on_next1PushButton_clicked();
+
+    void on_prev2PushButton_clicked();
+
+    void on_next2PushButton_clicked();
+
+    void on_prev3PushButton_clicked();
+
+    void on_next3PushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 
     QString fileName;
-    bool isECGFile;
+    bool isECGFile = false;
 
     // Данные для ЭКГ
     EDF edf;
     // График первого канала ЭКГ
     QChart *ecg1chart;
     QLineSeries *ecg1LineSeries;
+    QLineSeries *ecg1PartLineSeries;
+    uint32_t part1Number = 0;
     // График второго канала ЭКГ
     QChart *ecg2chart;
     QLineSeries *ecg2LineSeries;
+    QLineSeries *ecg2PartLineSeries;
+    uint32_t part2Number = 0;
     // График третьего канала ЭКГ
     QChart *ecg3chart;
     QLineSeries *ecg3LineSeries;
+    QLineSeries *ecg3PartLineSeries;
+    uint32_t part3Number = 0;
     // Скатерограмма R пиков
     QScatterSeries rPeaks;
+    // Вектор, в котором хранятся значения R пиков
+    std::vector<RPeak> vecRPeaks;
 
 
     // Данные для АУДИО

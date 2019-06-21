@@ -34,7 +34,7 @@ struct EDFHeader{
 };
 // Данные EDF файла
 struct EDFData{
-    // Размерность внешнего вектора 
+    // Внешнее -- signal - data-record - data
     std::vector<std::vector<double>> data;
     
     void printInfo();

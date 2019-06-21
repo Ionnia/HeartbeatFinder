@@ -36,7 +36,7 @@ void absBufToQLineSeriesWithPorog(QLineSeries *series, QLineSeries *integralSeri
                                   uint32_t ticksPerSecond = 44100){
     series->clear();
     integralSeries->clear();
-    uint32_t integrationWindow = 10;
+//    uint32_t integrationWindow = 10;
     uint32_t integrator = 0;
     int64_t averageValue = 0;
     for(uint32_t i = 0; i < bufSize; ++i){
@@ -63,7 +63,40 @@ void setChart(QChartView *chartView, QChart *chart, QLineSeries *series){
     chartView->setChart(chart);
 }
 
-void calculatePulsePoints(QScatterSeries *scatter, QLineSeries *integralSeries, int widthOfPlato, uint32_t ticksPerSecond = 44100){
+bool setPartialSeries(std::vector<double> &series, QLineSeries *partSeries, uint32_t partSize, uint32_t partNumber){
+    if(series.size() < partSize * (partNumber + 1)){
+        return false;
+    }
+    partSeries->clear();
+    for(uint32_t i = partSize * partNumber; i < partSize * (partNumber + 1); ++i){
+        partSeries->append(i, series[i]);
+    }
+    return true;
+}
+
+bool setPartialSeries(std::vector<RPeak> &series, QLineSeries *partSeries, uint32_t partSize, uint32_t partNumber){
+    if(series.size() < partSize * (partNumber + 1)){
+        return false;
+    }
+    partSeries->clear();
+    uint32_t startIndex = partSize * partNumber;
+    uint32_t endIndex = partSize * (partNumber + 1);
+    // Ищем индекс первого R зубца, положение которого больше startIndex
+    uint32_t firstRIndex = 0;
+    for(uint32_t i = 0; i < series.size(); ++i){
+        if(series[i].x >= startIndex){
+            firstRIndex = i;
+            break;
+        }
+    }
+    for(uint32_t i = firstRIndex; i < series.size() && series[i].x < endIndex; ++i){
+        partSeries->append(series[i].x, series[i].y);
+    }
+    return true;
+}
+
+
+void calculatePulsePoints(QScatterSeries *scatter, QLineSeries *integralSeries, int widthOfPlato){
     scatter->clear();
     int intSeriesSize = integralSeries->count();
     int sameValueCount = 0;

@@ -76,7 +76,7 @@ void readNBytes(std::ifstream &file, char *buf, uint32_t numOfBytes){
 // происходить в области данных
 void loadEDFHeader(std::ifstream &file, EDFHeader &header){
   // Буфер для чтения данных
-    char c[128];
+    char c[1024];
     // Читаем 1 параметр: 8 байт
     readNBytes(file, c, 8);
     header.version.append(c);
@@ -152,18 +152,22 @@ void loadEDFHeader(std::ifstream &file, EDFHeader &header){
         header.numOfSamplesInDataRecord.push_back(std::stoi(std::string(c)));
     }
     // Пропускаем зарезервированные 32 байта
-    readNBytes(file, c, 32);
+    readNBytes(file, c, 32 * header.numberOfSignals);
 }
 
 void loadEDFData(std::ifstream &file, EDFData &data, const EDFHeader &header){
     int32_t  value;
+    // Создаём вектора
     for(int i = 0; i < header.numberOfSignals; ++i){
-        std::vector<double> signal;
-        for(int j = 0; j < header.numOfSamplesInDataRecord[i]; ++j){
-            file.read((char *)&value, sizeof(value));
-            signal.push_back((double)value);
+        data.data.push_back(std::vector<double>());
+    }
+    for(int i = 0; i < header.numberOfDataRecords; ++i){
+        for(int j = 0; j < header.numberOfSignals; ++j){
+            for(int k = 0; k < header.numOfSamplesInDataRecord[j]/2; ++k){
+                file.read((char *)&value, sizeof(value));
+                data.data[j].push_back((double)value);
+            }
         }
-        data.data.push_back(signal);
     }
 }
 
