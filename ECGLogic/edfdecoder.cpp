@@ -156,14 +156,14 @@ void loadEDFHeader(std::ifstream &file, EDFHeader &header){
 }
 
 void loadEDFData(std::ifstream &file, EDFData &data, const EDFHeader &header){
-    int32_t  value;
+    int16_t  value;
     // Создаём вектора
     for(int i = 0; i < header.numberOfSignals; ++i){
         data.data.push_back(std::vector<double>());
     }
     for(int i = 0; i < header.numberOfDataRecords; ++i){
         for(int j = 0; j < header.numberOfSignals; ++j){
-            for(int k = 0; k < header.numOfSamplesInDataRecord[j]/2; ++k){
+            for(int k = 0; k < header.numOfSamplesInDataRecord[j]; ++k){
                 file.read((char *)&value, sizeof(value));
                 data.data[j].push_back((double)value);
             }

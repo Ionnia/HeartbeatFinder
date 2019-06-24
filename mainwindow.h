@@ -75,6 +75,8 @@ private slots:
 
     void on_next3PushButton_clicked();
 
+    void on_action_3_triggered();
+
 private:
     Ui::MainWindow *ui;
 
@@ -83,6 +85,7 @@ private:
 
     // Данные для ЭКГ
     EDF edf;
+    uint32_t ECG_SAMPLING_FREQUENCY = 1000;
     // График первого канала ЭКГ
     QChart *ecg1chart;
     QLineSeries *ecg1LineSeries;
@@ -98,6 +101,9 @@ private:
     QLineSeries *ecg3LineSeries;
     QLineSeries *ecg3PartLineSeries;
     uint32_t part3Number = 0;
+    // Порядковый номер выбранного графика ЭКГ для нахождения
+    // R зубцов
+    int32_t numOfEcgChannel;
     // Скатерограмма R пиков
     QScatterSeries rPeaks;
     // Вектор, в котором хранятся значения R пиков

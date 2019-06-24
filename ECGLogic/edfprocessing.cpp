@@ -112,7 +112,7 @@ std::vector<double> squareArray(std::vector<double> &values){
     return newValues;
 }
 
-// Функция реализующая предварительную обработку сигнала
+// Функция реализующая предварительную обработку сигнала для сигнала с большими перепадами по амплитуде
 std::vector<double> preprocessSignal(std::vector<double> &values, uint32_t normLevel){
     // Убираем артефакт ECG флешки из начала
     double lastValue = 0;
