@@ -302,7 +302,7 @@ void MainWindow::on_pushButton_clicked()
             return;
         }
         // Получение предобработанного сигнала
-        std::vector<double> preprocessedSignal = preprocessSignal(edf.data.data[numOfEcgChannel], ui->normLevelSpinBox->value());
+        std::vector<double> preprocessedSignal = preprocessSignal(edf.data.data[numOfEcgChannel], 0);
         // Нахождение QRS комплексов
         std::vector<QRS> qrsComplexes = findQRSComplexes(preprocessedSignal, ui->horizontalSlider->value());
         vecRPeaks = findRPeaks(edf.data.data[numOfEcgChannel], qrsComplexes);
