@@ -12,55 +12,55 @@ void EDFHeader::printInfo(){
     std::cout << "DurationOfDataRecord: " << durationOfDataRecord << std::endl;
     std::cout << "     NumberOfSignals: " << numberOfSignals << std::endl;
     std::cout << "             Signals: " << std::endl;
-    for(int i = 0; i < numberOfSignals; ++i){
+    for(int32_t i = 0; i < numberOfSignals; ++i){
         std::cout << "                  #" << i << ": " << labels[i] << std::endl;
     }
     std::cout << "     TransducerTypes: " << std::endl;
-    for (int i = 0; i < numberOfSignals; ++i)
+    for (int32_t i = 0; i < numberOfSignals; ++i)
     {
         std::cout << "                  #" << i << ": " << transducerTypes[i] << std::endl;
     }
     std::cout << "  PhysicalDimensions: " << std::endl;
-    for (int i = 0; i < numberOfSignals; ++i)
+    for (int32_t i = 0; i < numberOfSignals; ++i)
     {
         std::cout << "                  #" << i << ": " << physicalDimensions[i] << std::endl;
     }
     std::cout << "     PhysicalMinimum: " << std::endl;
-    for (int i = 0; i < numberOfSignals; ++i)
+    for (int32_t i = 0; i < numberOfSignals; ++i)
     {
         std::cout << "                  #" << i << ": " << physicalMinimum[i] << std::endl;
     }
     std::cout << "     PhysicalMaximum: " << std::endl;
-    for (int i = 0; i < numberOfSignals; ++i)
+    for (int32_t i = 0; i < numberOfSignals; ++i)
     {
         std::cout << "                  #" << i << ": " << physicalMaximum[i] << std::endl;
     }
     std::cout << "      DigitalMinimum: " << std::endl;
-    for (int i = 0; i < numberOfSignals; ++i)
+    for (int32_t i = 0; i < numberOfSignals; ++i)
     {
         std::cout << "                  #" << i << ": " << digitalMinimum[i] << std::endl;
     }
     std::cout << "      DigitalMaximum: " << std::endl;
-    for (int i = 0; i < numberOfSignals; ++i)
+    for (int32_t i = 0; i < numberOfSignals; ++i)
     {
         std::cout << "                  #" << i << ": " << digitalMaximum[i] << std::endl;
     }
     std::cout << "        Prefiltering: " << std::endl;
-    for (int i = 0; i < numberOfSignals; ++i)
+    for (int32_t i = 0; i < numberOfSignals; ++i)
     {
         std::cout << "                  #" << i << ": " << prefiltering[i] << std::endl;
     }
     std::cout << "NumOfSamplesInDataRecord: " << std::endl;
-    for (int i = 0; i < numberOfSignals; ++i)
+    for (int32_t i = 0; i < numberOfSignals; ++i)
     {
         std::cout << "                  #" << i << ": " << numOfSamplesInDataRecord[i] << std::endl;
     }
 }
 // Вывод информации 
 void EDFData::printInfo(){
-    for(int i = 0; i < data.size(); ++i){
+    for(int32_t i = 0; i < data.size(); ++i){
         std::cout << "Signal #" << i+1 << std::endl;
-        for(int j = 0; j < data[i].size(); ++j){
+        for(int32_t j = 0; j < data[i].size(); ++j){
             std::cout << data[i][j] << std::endl;
         }
     }
@@ -107,47 +107,47 @@ void loadEDFHeader(std::ifstream &file, EDFHeader &header){
     readNBytes(file, c, 4);
     header.numberOfSignals = std::stoi(c);
     // Читаем 10 параметры: numberOfSiganls * 16 байт
-    for(int i = 0; i < header.numberOfSignals; ++i){
+    for(int32_t i = 0; i < header.numberOfSignals; ++i){
         readNBytes(file, c, 16);
         header.labels.push_back(std::string(c));
     }
     // Читаем 11 параметры: numberOfSingals * 80 байт
-    for(int i = 0; i < header.numberOfSignals; ++i){
+    for(int32_t i = 0; i < header.numberOfSignals; ++i){
         readNBytes(file, c, 80);
         header.transducerTypes.push_back(std::string(c));
     }
     // Читаем 12 параметры: numberOfSingals * 8 байт
-    for(int i = 0; i < header.numberOfSignals; ++i){
+    for(int32_t i = 0; i < header.numberOfSignals; ++i){
         readNBytes(file, c, 8);
         header.physicalDimensions.push_back(std::string(c));
     }
     // Читаем 13 параметры: numberOfSignals * 8 байт
-    for(int i = 0; i < header.numberOfSignals; ++i){
+    for(int32_t i = 0; i < header.numberOfSignals; ++i){
         readNBytes(file, c, 8);
         header.physicalMinimum.push_back(std::stod(std::string(c)));
     }
     // Читаем 14 параметры: numberOfSignals * 8 ,fqn
-    for(int i = 0; i < header.numberOfSignals; ++i){
+    for(int32_t i = 0; i < header.numberOfSignals; ++i){
         readNBytes(file, c, 8);
         header.physicalMaximum.push_back(std::stod(std::string(c)));
     }
     // Читаем 15 параметры: numberOfSignals * 8 байт
-    for(int i = 0; i < header.numberOfSignals; ++i){
+    for(int32_t i = 0; i < header.numberOfSignals; ++i){
         readNBytes(file, c, 8);
         header.digitalMinimum.push_back(std::stoi(std::string(c)));
     }
     // Читаем 16 параметры: numberOfSignals * 8 байт
-    for(int i = 0;  i < header.numberOfSignals; ++i){
+    for(int32_t i = 0;  i < header.numberOfSignals; ++i){
         readNBytes(file, c, 8);
         header.digitalMaximum.push_back(std::stoi(std::string(c)));
     }
     // Читаем 17 параметры: numberOfSignals * 80 байт
-    for(int i = 0; i < header.numberOfSignals; ++i){
+    for(int32_t i = 0; i < header.numberOfSignals; ++i){
         readNBytes(file, c, 80);
         header.prefiltering.push_back(std::string(c));
     }
     // Читаем 18 параметры:
-    for(int i = 0; i < header.numberOfSignals; ++i){
+    for(int32_t i = 0; i < header.numberOfSignals; ++i){
         readNBytes(file, c, 8);
         header.numOfSamplesInDataRecord.push_back(std::stoi(std::string(c)));
     }
@@ -156,14 +156,16 @@ void loadEDFHeader(std::ifstream &file, EDFHeader &header){
 }
 
 void loadEDFData(std::ifstream &file, EDFData &data, const EDFHeader &header){
-    int16_t  value;
+    int16_t value;
     // Создаём вектора
-    for(int i = 0; i < header.numberOfSignals; ++i){
+    for(int32_t i = 0; i < header.numberOfSignals; ++i){
         data.data.push_back(std::vector<double>());
     }
-    for(int i = 0; i < header.numberOfDataRecords; ++i){
-        for(int j = 0; j < header.numberOfSignals; ++j){
-            for(int k = 0; k < header.numOfSamplesInDataRecord[j]; ++k){
+    std::cout << header.numberOfDataRecords << std::endl;
+    std::cout << header.numberOfSignals << std::endl;
+    for(int32_t i = 0; i < header.numberOfDataRecords; ++i){
+        for(int32_t j = 0; j < header.numberOfSignals; ++j){
+            for(int32_t k = 0; k < header.numOfSamplesInDataRecord[j]; ++k){
                 file.read((char *)&value, sizeof(value));
                 data.data[j].push_back((double)value);
             }
@@ -172,7 +174,7 @@ void loadEDFData(std::ifstream &file, EDFData &data, const EDFHeader &header){
 }
 
 // Функция открывает .edf файл
-int loadEDF(std::string pathToFile, EDF &edf){
+int32_t loadEDF(std::string pathToFile, EDF &edf){
     std::ifstream file(pathToFile);
     if(!file.is_open()){
         std::cerr << "Error::Can't open file!" << std::endl;

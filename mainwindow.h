@@ -18,7 +18,6 @@
 
 #include <QMessageBox>
 
-#include "wavfile.h"
 #include "ECGLogic/edfdecoder.h"
 #include "ECGLogic/edfprocessing.h"
 
@@ -37,21 +36,8 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_actionOpen_triggered();
-
-    void on_porogSlider_sliderMoved(int position);
-
-    void on_porogSlider_sliderReleased();
-
-    void on_checkBox_toggled(bool checked);
 
     void on_actionExit_triggered();
-
-    void on_platoSlider_sliderMoved(int position);
-
-    void on_checkBox_2_toggled(bool checked);
-
-    void on_platoSlider_sliderReleased();
 
     void on_actionSave_triggered();
 
@@ -109,28 +95,6 @@ private:
     // Вектор, в котором хранятся значения R пиков
     std::vector<RPeak> vecRPeaks;
 
-
-    // Данные для АУДИО
-    WavFile wavFile;
-    // Вывод исходного графика звука
-    QChartView *chartView1;
-    QChart *chart1;
-    QLineSeries *chartSeries1;
-
-    // Вывод абсолютных значений амплитуды
-    QChartView *chartView2;
-    QChart *chart2;
-    QLineSeries *chartSeries2;
-
-    // Интегральный график
-    QLineSeries *integralSeries;
-    // График с точками пульса
-    QScatterSeries *pulses;
-
-    // График спектра
-    QChartView *spectrumChartView;
-    QChart *spectrumChart;
-    QLineSeries *spectrumSeries;
 };
 
 #endif // MAINWINDOW_H

@@ -31,7 +31,7 @@ std::vector<double> integrateSignalWindow(std::vector<double> &values, uint32_t 
 std::vector<double> averageWindow(std::vector<double> &values, int32_t windowSize){
     double integrator = 0;
     std::vector<double> avgSignal;
-    for(int i = 1; i < windowSize/2 - 1; ++i){
+    for(int32_t i = 1; i < windowSize/2 - 1; ++i){
         integrator += values[i];
     }
     for(uint32_t i = 0; i < values.size(); ++i){

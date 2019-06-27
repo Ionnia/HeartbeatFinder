@@ -2,7 +2,6 @@
 #define WAV_FILE_H
 
 #include <QString>
-#include <SDL2/SDL_audio.h>
 
 struct WavFile {
     SDL_AudioSpec wav_spec;

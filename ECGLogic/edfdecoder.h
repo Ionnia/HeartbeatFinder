@@ -55,4 +55,4 @@ void loadEDFHeader(std::ifstream &file, EDFHeader &header);
 void loadEDFData(std::ifstream &file, EDFData &data, const EDFHeader &header);
 
 // Функция открывает .edf файл
-int loadEDF(std::string pathToFile, EDF &edf);
+int32_t loadEDF(std::string pathToFile, EDF &edf);

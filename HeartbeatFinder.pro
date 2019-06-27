@@ -32,13 +32,12 @@ SOURCES += \
 HEADERS += \
         mainwindow.h \
         logic.h \
-        wavfile.h \
         ECGLogic/edfdecoder.h \
         ECGLogic/edfprocessing.h
 
 FORMS += \
         mainwindow.ui
 
-LIBS += -lSDL2 -pthread
+LIBS += -pthread
 
 QMAKE_CXXFLAGS += -std=c++11

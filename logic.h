@@ -93,15 +93,15 @@ bool setPartialSeries(std::vector<RPeak> &series, QScatterSeries *partSeries, ui
 }
 
 
-void calculatePulsePoints(QScatterSeries *scatter, QLineSeries *integralSeries, int widthOfPlato){
+void calculatePulsePoints(QScatterSeries *scatter, QLineSeries *integralSeries, int32_t widthOfPlato){
     scatter->clear();
-    int intSeriesSize = integralSeries->count();
-    int sameValueCount = 0;
+    int32_t intSeriesSize = integralSeries->count();
+    int32_t sameValueCount = 0;
     bool insidePulseInterval = false;
     double intervalStart = 0;
     double intervalEnd = 0;
     double pulseTime = 0;
-    for(int i = 1; i < intSeriesSize; ++i){
+    for(int32_t i = 1; i < intSeriesSize; ++i){
         // Если текущее значение равно предыдущему
         if(integralSeries->at(i).y() == integralSeries->at(i-1).y()){
             ++sameValueCount;
